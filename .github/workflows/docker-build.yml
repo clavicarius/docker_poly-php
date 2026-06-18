@@ -1,4 +1,4 @@
-name: Docker Build Test
+name: Docker CI
 
 on:
   push:
@@ -6,11 +6,11 @@ on:
   pull_request:
     branches: [ main ]
   schedule:
-    - cron: "0 3 * * 1"   # jeden Montag um 03:00 UTC
+    - cron: "0 3 * * 1"
   workflow_dispatch:
 
 jobs:
-  docker-build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,18 +20,48 @@ jobs:
       - name: Docker Buildx einrichten
         uses: docker/setup-buildx-action@v3
 
+      - name: Docker Layer Cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
       - name: Docker Compose Build
         run: docker compose build
 
       - name: Container starten
         run: docker compose up -d
 
-      - name: Warten bis Container gestartet sind
-        run: sleep 20
+      - name: Warten bis Services bereit sind
+        run: sleep 25
 
-      - name: Container Status prüfen
+      - name: Container Status anzeigen
         run: docker compose ps
+
+      - name: PHP Versionen prüfen
+        run: |
+          docker compose exec -T php56 php -v
+          docker compose exec -T php74 php -v
+          docker compose exec -T php85 php -v
+
+      - name: Composer prüfen
+        run: |
+          docker compose exec -T php74 composer --version
+          docker compose exec -T php85 composer --version
+
+      - name: HTTP Endpoints testen
+        run: |
+          curl -f http://localhost:8056 || exit 1
+          curl -f http://localhost:8074 || exit 1
+          curl -f http://localhost:8085 || exit 1
+
+      - name: Container Logs bei Fehler anzeigen
+        if: failure()
+        run: docker compose logs
 
       - name: Container stoppen
         if: always()
-        run: docker compose down
+        run: docker compose down -v
+        

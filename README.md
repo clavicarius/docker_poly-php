@@ -3,13 +3,13 @@
 ![docker_logo](./img/docker_139x115.png) ![lamp_logo](./img/lamp-stack_400x100.png)
 
 Dieses Projekt stellt eine lokale **LAMP‑Testumgebung mit mehreren PHP‑Versionen parallel** bereit.  
-Es dient vor allem dazu, bestehende Anwendungen zwischen verschiedenen PHP‑Versionen zu vergleichen und Migrationen (z. B. von PHP 5.6 auf PHP 8.3) zu testen.
+Es dient vor allem dazu, bestehende Anwendungen zwischen verschiedenen PHP‑Versionen zu vergleichen und Migrationen (z. B. von PHP 5.6 auf PHP 8.5) zu testen.
 
 Der Stack basiert auf **Docker Compose** und enthält:
 
 - PHP **5.6**
 - PHP **7.4**
-- PHP **8.3**
+- PHP **8.5**
 - **MariaDB 10.3**
 - **phpMyAdmin**
 - aktivierte PHP‑Extensions
@@ -47,7 +47,7 @@ project/
  ├─ logs/
  │   ├─ php56/
  │   ├─ php74/
- │   └─ php83/
+ │   └─ php85/
  ├─ php-config/
  │   ├─ php.ini
  │   └─ xdebug-php56.ini
@@ -55,7 +55,7 @@ project/
  │   └─ Dockerfile
  ├─ php74/
  │   └─ Dockerfile
- └─ php83/
+ └─ php85/
      └─ Dockerfile
 ```
 
@@ -95,8 +95,8 @@ http://localhost:8056
 PHP 7.4  
 http://localhost:8074
 
-PHP 8.3  
-http://localhost:8083
+PHP 8.5
+http://localhost:8085
 
 phpMyAdmin  
 http://localhost:8080
@@ -147,10 +147,10 @@ lamp_password
 
 Composer ist in allen PHP‑Containern installiert.
 
-Beispiel (PHP 8.3):
+Beispiel (PHP 8.5):
 
 ```
-docker compose exec php83 composer install
+docker compose exec php85 composer install
 ```
 
 Für alte Projekte mit PHP 5.6:
@@ -166,7 +166,7 @@ docker compose exec php56 composer install
 ```
 docker compose exec php56 php -v
 docker compose exec php74 php -v
-docker compose exec php83 php -v
+docker compose exec php85 php -v
 ```
 
 ---
@@ -217,13 +217,13 @@ Apache‑Logs werden lokal gespeichert unter:
 ```
 logs/php56
 logs/php74
-logs/php83
+logs/php85
 ```
 
 Container‑Logs anzeigen:
 
 ```
-docker compose logs -f php83
+docker compose logs -f php85
 ```
 
 ---
@@ -233,7 +233,7 @@ docker compose logs -f php83
 1. Anwendung in **html/** legen
 2. Projekt mit **PHP 5.6 testen**
 3. Fehler unter **PHP 7.4 beheben**
-4. Anwendung unter **PHP 8.3 final prüfen**
+4. Anwendung unter **PHP 8.5 final prüfen**
 
 So lassen sich Inkompatibilitäten schrittweise identifizieren.
 

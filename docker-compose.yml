@@ -49,15 +49,15 @@ services:
         max-size: "10m"
         max-file: "3"
 
-  php83:
-    build: ./php83
-    container_name: php83
+  php85:
+    build: ./php85
+    container_name: php85
     ports:
-      - "8083:80"
+      - "8085:80"
     volumes:
       - ./html:/var/www/html
       - ./php-config/php.ini:/usr/local/etc/php/php.ini
-      - ./logs/php83:/var/log/apache2
+      - ./logs/php85:/var/log/apache2
     depends_on:
       db:
         condition: service_healthy

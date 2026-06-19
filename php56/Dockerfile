@@ -4,9 +4,15 @@ FROM php:5.6-apache
 RUN sed -i 's/deb.debian.org/archive.debian.org/g' /etc/apt/sources.list \
  && sed -i 's/security.debian.org/archive.debian.org/g' /etc/apt/sources.list \
  && sed -i '/stretch-updates/d' /etc/apt/sources.list \
- && apt-get -o Acquire::Check-Valid-Until=false update
+ && echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99jessie \
+ && echo 'Acquire::AllowInsecureRepositories "true";' >> /etc/apt/apt.conf.d/99jessie \
+ && echo 'APT::Get::AllowUnauthenticated "true";' >> /etc/apt/apt.conf.d/99jessie \
+ && apt-get -o Acquire::Check-Valid-Until=false \
+            -o Acquire::AllowInsecureRepositories=true \
+            update
 
-RUN apt-get install -y \
+# Systempakete
+RUN apt-get install -y --allow-unauthenticated \
     libpng-dev \
     libicu-dev \
     libjpeg-dev \
@@ -14,11 +20,12 @@ RUN apt-get install -y \
     git \
     unzip
 
-# GD sauber konfigurieren (für alte PHP Version nötig)
+# GD für PHP 5.6 konfigurieren
 RUN docker-php-ext-configure gd \
     --with-freetype-dir=/usr/include/ \
     --with-jpeg-dir=/usr/include/
 
+# PHP Extensions
 RUN docker-php-ext-install \
     mysqli \
     pdo \
@@ -27,12 +34,12 @@ RUN docker-php-ext-install \
     intl \
     mbstring
 
-# letzte kompatible Xdebug Version für PHP 5.6
+# Letzte kompatible Xdebug-Version für PHP 5.6
 RUN pecl install xdebug-2.5.5 \
  && docker-php-ext-enable xdebug
 
-# Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# Composer (PHP 5.6 kompatibel)
+COPY --from=composer:1 /usr/bin/composer /usr/bin/composer
 
-# Apache modules
+# Apache Module
 RUN a2enmod rewrite

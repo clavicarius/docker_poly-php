@@ -72,6 +72,29 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  php85:
+    build: ./php85
+    container_name: php85
+    ports:
+      - "8085:80"
+    volumes:
+      - ./html:/var/www/html
+      - ./php-config/php.ini:/usr/local/etc/php/php.ini
+      - ./logs/php85:/var/log/apache2
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
   db:
     image: mariadb:10.3
     container_name: lamp-db

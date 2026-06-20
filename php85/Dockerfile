@@ -1,4 +1,4 @@
-FROM php:7.4-apache
+FROM php:8.5-apache
 
 RUN apt-get update && apt-get install -y \
     libpng-dev \
@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y \
     git \
     && docker-php-ext-install mysqli pdo pdo_mysql gd intl mbstring
 
-RUN pecl install xdebug-3.1.6 \
+RUN pecl install xdebug \
     && docker-php-ext-enable xdebug
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
